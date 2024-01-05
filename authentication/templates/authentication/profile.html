@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block head_title %}Profile{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Profile</h5>
+            <hr />
+
+            <div class="row">
+              <div class="col-md-4">
+                <h6>User Information</h6>
+                <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
+                <p>Email: {{ user.email }}</p>
+                <h6>Account Balance</h6>
+                <p>Balance: {% if user.userprofile %}${{ user.userprofile.balance }}{% else %}N/A{% endif %}</p>
+
+  <!-- Display Updated Balance After Borrowing -->
+  {% if borrow_transaction %}
+    <p>Updated Balance After Borrowing: ${{ borrow_transaction.balance_after_transaction }}</p>
+  {% endif %}
+                
+
+
+                <h6>Transaction History</h6>
+                <a href="{% url 'deposit_money' %}" class="btn btn-success">Deposit Money</a>
+                <!-- Add more links to other transaction-related views if applicable -->
+              </div>
+
+              <div class="col-md-8">
+                <h6>Transaction Report</h6>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Book Name</th>
+                      <th>Price</th>
+                      <th>Balance After Transaction</th>
+                      <th>Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for transaction in user.transactions.all %}
+                      {% if transaction.transaction_type == 'borrow' %}
+                        <tr>
+                          <td>{{ forloop.counter }}</td>
+                          <td>{{ transaction.book.title }}</td>
+                          <td>{{ transaction.amount }}</td>
+                          <td>{{ transaction.balance_after_transaction }}</td>
+                          <td>{{ transaction.timestamp }}</td>
+                          <td>
+                            <form method="post" action="{% url 'return_book' transaction.book.id %}">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-warning">Return Book</button>
+                            </form>
+                          </td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

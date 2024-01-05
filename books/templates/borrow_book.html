@@ -1,0 +1,27 @@
+<!-- books/templates/books/borrow_book.html -->
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block head_title %}Borrow Book{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Borrow Book</h5>
+            <hr />
+
+            <form method="post" class="mb-3">
+              {% csrf_token %}
+              {{ form | crispy }}
+              <button type="submit" class="btn btn-primary">Borrow</button>
+            </form>
+
+            <a href="{% url 'profile' %}" class="btn btn-secondary">Cancel</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

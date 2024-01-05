@@ -1,0 +1,59 @@
+{% extends 'base.html' %} 
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <img src="{{ book.image.url }}" class="img-fluid" alt="{{ book.title }}" />
+    </div>
+    <div class="col-md-6">
+      <h2>{{ book.title }}</h2>
+      <p>{{ book.description }}</p>
+      <p>Borrowing Price: ${{ book.borrowing_price }}</p>
+
+      {% if book.categories.all %}
+        <p>Categories: 
+          {% for category in book.categories.all %}
+            {{ category.name }}{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        </p>
+      {% endif %}
+
+      {% if user.is_authenticated %}
+      <form method="post" action="">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Borrow Book</button>
+      </form>
+    {% else %}
+      <p>Please <a href="{% url 'login' %}">login</a> to borrow this book.</p>
+    {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card m-2">
+  <h5 class="p-3">Reviews</h5>
+  {% for review in reviews %}
+      <div class="card-body border m-2">
+          <p><b>{{ review.user.username }}</b> {{ review.created_on }}</p>
+          <p>{{ review.body }}</p>
+      </div>
+  {% endfor %}
+</div>
+
+<div class="card m-2">
+  <div class="card-body">
+      {% if user_has_borrowed %}
+          <form method="post">
+              <h5>Add a Review</h5>
+              {% csrf_token %}
+              {{ review_form | crispy }}
+              <button class="btn btn-warning">Submit</button>
+          </form>
+      {% else %}
+          <p>You can only submit a review for books you have borrowed.</p>
+      {% endif %}
+  </div>
+</div>
+{% endblock %}
